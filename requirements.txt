@@ -9,3 +9,10 @@ jinja2
 psycopg2-binary
 sqlalchemy
 python-dotenv
+fastapi
+uvicorn
+jinja2
+psycopg2-binary
+sqlalchemy
+python-multipart  # ضروري لاستقبال صور الإشعارات وملفات الـ Form
+python-dotenv
