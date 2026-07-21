@@ -1,70 +1,93 @@
 import os
-from fastapi import FastAPI, Request, Form, status
+from dotenv import load_dotenv
+from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from supabase import create_client, Client
-from dotenv import load_dotenv
 
+# تحميل ملف .env للمحيط المحلي
 load_dotenv()
 
-app = FastAPI(title="منصة محاصيل السودان")
+# قراءة وتنظيف متغيرات البيئة تلقائياً لمنع أخطاء Invalid URL / Invalid Key
+SUPABASE_URL = (os.getenv("SUPABASE_URL") or os.getenv("NEXT_PUBLIC_SUPABASE_URL") or "").strip()
+SUPABASE_KEY = (os.getenv("SUPABASE_KEY") or os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY") or "").strip()
 
-# إعداد Supabase
-SUPABASE_URL = os.getenv("NEXT_PUBLIC_SUPABASE_URL") or os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY") or os.getenv("SUPABASE_KEY")
+# طباعة للتأكد في سجلات Render (Logs)
+print(f"--> Initializing Supabase with URL: '{SUPABASE_URL}'")
 
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise ValueError("⚠️ Error: SUPABASE_URL or SUPABASE_KEY environment variable is missing!")
+
+# إنشاء عميل الاتصال بـ Supabase
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# إعداد القوالب والملفات الثابتة
-templates = Jinja2Templates(directory="templates")
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# إنشاء تطبيق FastAPI
+app = FastAPI(title="محاصيل السودان - Mahaseel Sudan")
 
+# ربط المجلدات الثابتة والقوالب
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
+
+
+# ----------------------------------------------------
+# المسارات (Routes)
+# ----------------------------------------------------
 
 @app.get("/", response_class=HTMLResponse)
-async def home_page(request: Request):
-    # جلب الأسعار من Supabase
-    response = supabase.table("market_posts").select("*").order("created_at", desc=True).execute()
-    posts = response.data if response.data else []
-    
+async def home(request: Request):
+    """
+    الصفحة الرئيسية: عرض أسعار المحاصيل الحالية
+    """
+    try:
+        # جلب البيانات من جدول الاسعار في Supabase
+        response = supabase.table("prices").select("*").order("created_at", desc=True).execute()
+        prices = response.data if response.data else []
+    except Exception as e:
+        print(f"Error fetching prices: {e}")
+        prices = []
+
     return templates.TemplateResponse(
-        "index.html", 
-        {"request": request, "posts": posts}
+        "index.html",
+        {"request": request, "prices": prices}
     )
 
 
 @app.get("/add-price", response_class=HTMLResponse)
 async def add_price_page(request: Request):
+    """
+    صفحة إضافة سعر جديد لمادة أو محصول
+    """
     return templates.TemplateResponse("add_price.html", {"request": request})
 
 
 @app.post("/add-price")
-async def handle_add_price(
-    state: str = Form(...),
-    locality: str = Form(...),
-    market_name: str = Form(...),
-    merchant_name: str = Form(...),
-    phone: str = Form(...),
-    notes: str = Form(""),
-    crop_names: list[str] = Form(...),
-    crop_prices: list[str] = Form(...)
+async def add_price_submit(
+    crop_name: str = Form(...),
+    market_location: str = Form(...),
+    price: float = Form(...),
+    unit: str = Form(...)
 ):
-    # تجميع الأصناف والأسعار في قائمة JSON
-    items = []
-    for name, price in zip(crop_names, crop_prices):
-        if name.strip() and price.strip():
-            items.append({"name": name.strip(), "price": price.strip()})
+    """
+    استلام بيانات السعر الجديد وحفظها في Supabase
+    """
+    try:
+        new_entry = {
+            "crop_name": crop_name,
+            "market_location": market_location,
+            "price": price,
+            "unit": unit
+        }
+        supabase.table("prices").insert(new_entry).execute()
+        return RedirectResponse(url="/", status_code=303)
+    except Exception as e:
+        print(f"Error inserting price: {e}")
+        return RedirectResponse(url="/add-price?error=1", status_code=303)
 
-    # تجهيز السجل للحفظ في Supabase
-    new_post = {
-        "state": state,
-        "locality": locality,
-        "market_name": market_name,
-        "merchant_name": merchant_name,
-        "phone": phone,
-        "notes": notes,
-        "items": items
-    }
 
-    supabase.table("market_posts").insert(new_post).execute()
-    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+@app.get("/health")
+async def health_check():
+    """
+    مسار للفحص الدائم لسيرفر Render (Health Check)
+    """
+    return {"status": "healthy", "project": "Mahaseel Sudan"}
