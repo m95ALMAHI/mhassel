@@ -4,25 +4,25 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from supabase import create_client, Client
+from sqlalchemy import create_engine, text
 
 load_dotenv()
 
-# قراءة وتنظيف القيم
-SUPABASE_URL = (os.getenv("SUPABASE_URL") or "").strip()
-SUPABASE_KEY = (os.getenv("SUPABASE_KEY") or "").strip()
+# قراءة سلسلة اتصال ببيانات Supabase عبر PostgreSQL
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 
-# تهيئة العميل بأسلوب محمي تجنباً لـ Crash السيرفر
-supabase: Client = None
+# إصلاح البادئة في حال كانت تبدأ بـ postgres:// بدلاً من postgresql://
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-if SUPABASE_URL and SUPABASE_KEY:
+# إنشاء المحرك (Engine) للاتصال بقاعدة البيانات
+engine = None
+if DATABASE_URL:
     try:
-        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-        print("--> [SUCCESS] Supabase connected successfully!")
+        engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+        print("--> [SUCCESS] Connected to PostgreSQL successfully!")
     except Exception as e:
-        print(f"--> [ERROR] Supabase initialization failed: {e}")
-else:
-    print(f"--> [WARNING] Environment variables missing. URL: '{SUPABASE_URL}', Key Length: {len(SUPABASE_KEY)}")
+        print(f"--> [ERROR] Failed to connect to database: {e}")
 
 app = FastAPI(title="Mahaseel Sudan")
 
@@ -32,21 +32,17 @@ templates = Jinja2Templates(directory="templates")
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     prices = []
-    if supabase:
+    if engine:
         try:
-            res = supabase.table("prices").select("*").order("created_at", desc=True).execute()
-            prices = res.data or []
+            with engine.connect() as connection:
+                result = connection.execute(text("SELECT * FROM prices ORDER BY created_at DESC"))
+                # تحويل النتائج إلى القواميس (Dicts) لتمريرها للقالب
+                prices = [dict(row._mapping) for row in result]
         except Exception as e:
-            print(f"Database query error: {e}")
+            print(f"Error fetching prices: {e}")
 
     return templates.TemplateResponse("index.html", {"request": request, "prices": prices})
 
-# مسار جديد للتحقق من البيئة مباشرة من المتصفح
-@app.get("/debug-env")
-async def debug_env():
-    return {
-        "supabase_url_value": SUPABASE_URL,
-        "supabase_url_is_valid": SUPABASE_URL.startswith("https://"),
-        "supabase_key_length": len(SUPABASE_KEY),
-        "is_connected": supabase is not None
-    }
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "db_connected": engine is not None}
