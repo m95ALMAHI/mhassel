@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="text-center py-4 bg-emerald-800 text-white rounded-2xl shadow-sm mb-6">
+        <h1 class="text-2xl font-black mb-1">أسواق المحاصيل والمدخلات الزراعية</h1>
+        <p class="text-xs text-emerald-200">تحديث يومي لأسعار المحاصيل بكافة ولايات ومحليات السودان</p>
+    </div>
+
+    {% if posts %}
+        {% for post in posts %}
+        <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-5 mb-6 text-right">
+            <!-- الهيدر -->
+            <div class="bg-emerald-50 border-r-4 border-emerald-600 p-3 rounded-lg mb-4">
+                <h2 class="font-bold text-lg text-emerald-900">
+                    📍 أسعار المحاصيل – {{ post.market_name }} (محلية {{ post.locality }} - {{ post.state }})
+                </h2>
+                <p class="text-xs text-slate-500 mt-1">🗓️ {{ post.post_date or post.created_at[:10] }}</p>
+            </div>
+
+            <!-- جدول المحاصيل -->
+            <div class="divide-y divide-slate-100 mb-4">
+                {% for item in post.items %}
+                <div class="py-2 flex justify-between items-center text-sm">
+                    <span class="font-medium text-slate-800">🔼 {{ item.name }}</span>
+                    <span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                        {{ item.price }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- ملاحظات التاجر -->
+            {% if post.notes %}
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-900 mb-3">
+                📢 {{ post.notes }}
+            </div>
+            {% endif %}
+
+            <!-- بيانات التواصل -->
+            <div class="flex justify-between items-center pt-2 border-t text-sm font-semibold">
+                <span class="text-slate-700">✅ {{ post.merchant_name }}</span>
+                <a href="tel:{{ post.phone }}" class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-lg text-xs font-mono font-bold dir-ltr">
+                    📞 {{ post.phone }}
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="text-center py-12 text-slate-500">لا توجد نشرات أسعار مسجلة حالياً.</div>
+    {% endif %}
+</div>
+{% endblock %}

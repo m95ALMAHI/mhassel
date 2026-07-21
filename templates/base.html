@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}منصة محاصيل السودان{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col font-sans">
+
+    <!-- الهيدر -->
+    <header class="bg-emerald-800 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="/" class="text-2xl font-black flex items-center gap-2">
+                🌾 <span>محاصيل السودان</span>
+            </a>
+            <a href="/add-price" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-bold transition shadow">
+                ➕ إضافة نشرة أسعار
+            </a>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="flex-1 max-w-4xl w-full mx-auto p-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- الفوتر الحصري -->
+    <footer class="w-full bg-slate-900 text-white py-6 border-t-4 border-emerald-600 mt-12">
+        <div class="max-w-4xl mx-auto px-4 text-center space-y-2">
+            <p class="font-semibold text-lg text-emerald-400">🌾 منصة محاصيل السودان</p>
+            <p class="text-sm text-slate-300">جميع الحقوق محفوظة © 2026</p>
+            <div class="pt-2 text-xs text-slate-400 border-t border-slate-800">
+                <p>
+                    طور بواسطة <span class="text-emerald-400 font-bold">مصطفى الماحي</span> | 
+                    تحت إشراف مهندس زراعي <span class="text-emerald-400 font-bold">محمد حيدر</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

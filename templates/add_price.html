@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 max-w-2xl mx-auto">
+    <h1 class="text-xl font-bold text-slate-800 mb-6 text-center">إضافة نشرة أسعار جديدة</h1>
+
+    <form action="/add-price" method="POST" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-xs font-bold mb-1">الولاية</label>
+                <input type="text" name="state" value="ولاية الجزيرة" required class="w-full border p-2 rounded-lg text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1">المحلية</label>
+                <input type="text" name="locality" value="المناقل" required class="w-full border p-2 rounded-lg text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1">اسم السوق</label>
+                <input type="text" name="market_name" value="سوق الهدى" required class="w-full border p-2 rounded-lg text-sm">
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-bold mb-1">اسم التاجر / المحل</label>
+                <input type="text" name="merchant_name" placeholder="مثال: ود البله للمحاصيل" required class="w-full border p-2 rounded-lg text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1">رقم الهاتف</label>
+                <input type="text" name="phone" placeholder="0120827832" required class="w-full border p-2 rounded-lg text-sm text-right">
+            </div>
+        </div>
+
+        <!-- الأجناس والأسعار -->
+        <div class="border-t pt-4 mt-4">
+            <label class="block text-xs font-bold mb-2">الأصناف والأسعار</label>
+            <div id="items-container" class="space-y-2">
+                <div class="flex gap-2">
+                    <input type="text" name="crop_names" placeholder="اسم المحصول (مثال: قمح)" required class="flex-1 border p-2 rounded-lg text-sm">
+                    <input type="text" name="crop_prices" placeholder="السعر (مثال: 190)" required class="flex-1 border p-2 rounded-lg text-sm">
+                </div>
+            </div>
+            <button type="button" onclick="addRow()" class="text-xs text-emerald-700 font-bold mt-2 hover:underline">
+                ➕ إضافة صنف آخر
+            </button>
+        </div>
+
+        <div>
+            <label class="block text-xs font-bold mb-1">ملاحظات أو طلبات الشراء</label>
+            <textarea name="notes" rows="3" placeholder="مثال: نشتري كميات بسعر السوق..." class="w-full border p-2 rounded-lg text-sm"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-emerald-700 text-white font-bold py-3 rounded-xl hover:bg-emerald-800 transition">
+            نشر الأسعار الآن
+        </button>
+    </form>
+</div>
+
+<script>
+function addRow() {
+    const container = document.getElementById('items-container');
+    const div = document.createElement('div');
+    div.className = 'flex gap-2';
+    div.innerHTML = `
+        <input type="text" name="crop_names" placeholder="اسم المحصول" class="flex-1 border p-2 rounded-lg text-sm">
+        <input type="text" name="crop_prices" placeholder="السعر" class="flex-1 border p-2 rounded-lg text-sm">
+    `;
+    container.appendChild(div);
+}
+</script>
+{% endblock %}
