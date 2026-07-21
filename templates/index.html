@@ -6,106 +6,161 @@
     <title>بورصة محاصيل السودان</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- الهيدر -->
+    <!-- الهيدر الرئيسي -->
     <header class="bg-emerald-800 text-white p-4 shadow-lg">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">🌾 بورصة محاصيل السودان</h1>
-            <button onclick="toggleModal('orderModal')" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-sm font-bold">
-                + إضافة عرض / طلب
-            </button>
+            <a href="/" class="text-2xl font-bold flex items-center gap-2">
+                🌾 محاصيل السودان
+            </a>
+            <div class="flex items-center gap-2">
+                <a href="/admin" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow transition">
+                    ➕ إضافة نشرة أسعار
+                </a>
+            </div>
         </div>
     </header>
-  <a href="/admin" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-bold">+ إضافة نشرة أسعار</a>
-    <div class="container mx-auto p-4">
-        <h2 class="text-xl font-bold my-4 text-emerald-900">📊 جدول التداولات اليومية</h2>
 
-        <!-- جدول البورصة -->
-        <div class="bg-white rounded-lg shadow overflow-x-auto">
+    <!-- لافتة الترحيب -->
+    <main class="container mx-auto p-4 mb-auto">
+        <div class="bg-emerald-900 text-white p-6 rounded-2xl shadow-md mb-6 text-center">
+            <h2 class="text-2xl font-bold mb-2">أسواق المحاصيل المدخلات الزراعية</h2>
+            <p class="text-emerald-100 text-sm">تحديث يومي لأسعار المحاصيل بكافة ولايات ومحليات السودان</p>
+        </div>
+
+        <!-- قسم البورصة والتداولات -->
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-emerald-900">📊 نشرات الأسعار والتداولات</h3>
+            <button onclick="toggleModal('orderModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow">
+                + إضافة عرض/طلب مباشر
+            </button>
+        </div>
+
+        <!-- جدول التداولات -->
+        <div class="bg-white rounded-xl shadow overflow-x-auto border border-gray-200">
             <table class="w-full text-right border-collapse">
-                <thead class="bg-emerald-50 border-b">
+                <thead class="bg-emerald-50 text-emerald-900 border-b border-emerald-100">
                     <tr>
                         <th class="p-3">النوع</th>
                         <th class="p-3">المحصول</th>
                         <th class="p-3">الكمية</th>
                         <th class="p-3">السعر (SDG)</th>
-                        <th class="p-3">الولاية</th>
-                        <th class="p-3">الإجراءات</th>
+                        <th class="p-3">المنطقة / الولاية</th>
+                        <th class="p-3 text-center">التواصل والدفع</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for order in orders %}
-                    <tr class="border-b hover:bg-gray-50">
+                    <tr class="border-b hover:bg-gray-50 transition">
                         <td class="p-3">
                             {% if order.order_type == 'SELL' %}
-                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded font-bold">عرض بيع</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-2.5 py-1 rounded-full font-bold">عرض بيع</span>
                             {% else %}
-                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded font-bold">طلب شراء</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-bold">طلب شراء</span>
                             {% endif %}
                         </td>
-                        <td class="p-3 font-semibold">{{ order.crop_name }}</td>
+                        <td class="p-3 font-semibold text-gray-900">{{ order.crop_name }}</td>
                         <td class="p-3">{{ order.quantity }}</td>
                         <td class="p-3 font-bold text-emerald-700">{{ order.price_per_unit }}</td>
                         <td class="p-3">{{ order.state }}</td>
-                        <td class="p-3 space-x-2 space-x-reverse">
-                            <a href="{{ order.wa_link }}" target="_blank" class="bg-green-500 text-white px-3 py-1 rounded text-xs inline-block">💬 واتساب</a>
-                            <button onclick="openPaymentModal({{ order.id }})" class="bg-blue-600 text-white px-3 py-1 rounded text-xs">🏦 تأكيد دفع</button>
+                        <td class="p-3 text-center space-x-1 space-x-reverse">
+                            <a href="{{ order.wa_link }}" target="_blank" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs font-medium inline-flex items-center gap-1 shadow">
+                                💬 واتساب
+                            </a>
+                            <button onclick="openPaymentModal({{ order.id }})" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium shadow">
+                                🏦 إشعار دفع
+                            </button>
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="6" class="text-center p-6 text-gray-500">لا توجد عروض أو طلبات مسجلة حالياً.</td>
+                        <td colspan="6" class="text-center p-8 text-gray-500 font-medium">
+                            لا توجد نشرات أسعار أو عروض مسجلة حالياً.
+                        </td>
                     </tr>
-                    {% me endfor %}
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
-    </div>
+    </main>
 
-    <!-- Modal إضافة عرض/طلب -->
-    <div id="orderModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 class="text-lg font-bold mb-4">إضافة تداول جديد</h3>
+    <!-- Modal إضافة عرض/طلب من المستخدم -->
+    <div id="orderModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <h3 class="text-lg font-bold mb-4 text-emerald-900">إضافة عرض أو طلب جديد</h3>
             <form action="/add-order" method="POST" class="space-y-3">
-                <select name="order_type" class="w-full border p-2 rounded">
-                    <option value="SELL">عرض بيع</option>
-                    <option value="BUY">طلب شراء</option>
-                </select>
-                <input type="text" name="crop_name" placeholder="اسم المحصول (مثل: سمسم، ذرة)" class="w-full border p-2 rounded" required>
-                <input type="text" name="quantity" placeholder="الكمية (مثل: 50 طن)" class="w-full border p-2 rounded" required>
-                <input type="number" step="0.01" name="price_per_unit" placeholder="السعر للوحدة" class="w-full border p-2 rounded" required>
-                <input type="text" name="state" placeholder="الولاية / المحلية" class="w-full border p-2 rounded" required>
-                <input type="text" name="phone" placeholder="رقم الهاتف (مع رمز الدولة)" class="w-full border p-2 rounded" required>
-                <div class="flex justify-end space-x-2 space-x-reverse mt-4">
-                    <button type="button" onclick="toggleModal('orderModal')" class="px-4 py-2 bg-gray-300 rounded">إلغاء</button>
-                    <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded">حفظ</button>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">نوع المعاملة:</label>
+                    <select name="order_type" class="w-full border p-2 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <option value="SELL">عرض بيع</option>
+                        <option value="BUY">طلب شراء</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">المحصول:</label>
+                    <input type="text" name="crop_name" placeholder="مثال: سمسم أبيض، فول سوداني" class="w-full border p-2 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">الكمية:</label>
+                    <input type="text" name="quantity" placeholder="مثال: 10 طن أو 100 جوال" class="w-full border p-2 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">السعر المعروض (بالجنيه):</label>
+                    <input type="number" step="0.01" name="price_per_unit" placeholder="السعر" class="w-full border p-2 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">الولاية / المدينة:</label>
+                    <input type="text" name="state" placeholder="مثال: القضارف" class="w-full border p-2 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">رقم الواتساب (مع رمز الدولة):</label>
+                    <input type="text" name="phone" placeholder="مثال: 249912345678" class="w-full border p-2 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none" required>
+                </div>
+                <div class="flex justify-end gap-2 mt-5">
+                    <button type="button" onclick="toggleModal('orderModal')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300">إلغاء</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-bold shadow">نشر الآن</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Modal إرفاق التحويل البنكي -->
-    <div id="paymentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 class="text-lg font-bold mb-4">إرفاق إشعار التحويل البنكي (بنكك / أوكاش)</h3>
+    <div id="paymentModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <h3 class="text-lg font-bold mb-4 text-blue-900">إرفاق إشعار الدفع البنكي (بنكك / أوكاش)</h3>
             <form action="/submit-payment" method="POST" enctype="multipart/form-data" class="space-y-3">
                 <input type="hidden" name="order_id" id="modalOrderId">
-                <input type="text" name="buyer_name" placeholder="اسمك الكامل" class="w-full border p-2 rounded" required>
-                <input type="text" name="buyer_phone" placeholder="رقم هاتفك" class="w-full border p-2 rounded" required>
-                <input type="text" name="bank_tx_id" placeholder="رقم العملية / الرقم المرجعي" class="w-full border p-2 rounded" required>
                 <div>
-                    <label class="block text-xs text-gray-600 mb-1">صورة الإشعار (Screenshot):</label>
-                    <input type="file" name="receipt" accept="image/*" class="w-full border p-1 rounded" required>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">اسم المشتري/المحول:</label>
+                    <input type="text" name="buyer_name" placeholder="الاسم الكامل" class="w-full border p-2 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none" required>
                 </div>
-                <div class="flex justify-end space-x-2 space-x-reverse mt-4">
-                    <button type="button" onclick="toggleModal('paymentModal')" class="px-4 py-2 bg-gray-300 rounded">إلغاء</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">إرسال الإشعار</button>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف:</label>
+                    <input type="text" name="buyer_phone" placeholder="رقم الهاتف" class="w-full border p-2 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">الرقم المرجعي / رقم العملية:</label>
+                    <input type="text" name="bank_tx_id" placeholder="رقم المعاملة البنكية" class="w-full border p-2 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">صورة الإشعار (Screenshot):</label>
+                    <input type="file" name="receipt" accept="image/*" class="w-full border p-1.5 rounded-lg text-sm bg-gray-50" required>
+                </div>
+                <div class="flex justify-end gap-2 mt-5">
+                    <button type="button" onclick="toggleModal('paymentModal')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300">إلغاء</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold shadow">إرسال الإشعار</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- الفوتر -->
+    <footer class="bg-gray-900 text-gray-400 py-4 text-center text-sm border-t border-gray-800">
+        <p>منصة محاصيل السودان © 2026 - جميع الحقوق محفوظة</p>
+    </footer>
+
+    <!-- السكريبت التفاعلي -->
     <script>
         function toggleModal(id) {
             document.getElementById(id).classList.toggle('hidden');
@@ -117,4 +172,3 @@
     </script>
 </body>
 </html>
-
