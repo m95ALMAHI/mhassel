@@ -46,7 +46,7 @@
                         </td>
                         <td class="p-3 font-semibold">{{ order.crop_name }}</td>
                         <td class="p-3">{{ order.quantity }}</td>
-                        <td class="p-3 font-bold text-emerald-700">{{ "{:,.0f}".format(order.price_per_unit) }}</td>
+                        <td class="p-3 font-bold text-emerald-700">{{ order.price_per_unit }}</td>
                         <td class="p-3">{{ order.state }}</td>
                         <td class="p-3 space-x-2 space-x-reverse">
                             <a href="{{ order.wa_link }}" target="_blank" class="bg-green-500 text-white px-3 py-1 rounded text-xs inline-block">💬 واتساب</a>
