@@ -5,6 +5,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import create_engine, text
+from fastapi import Form
+from fastapi.responses import RedirectResponse
 
 load_dotenv()
 
@@ -46,3 +48,36 @@ async def home(request: Request):
 @app.get("/health")
 async def health_check():
     return {"status": "ok", "db_connected": engine is not None}
+
+# 1. مسار عرض صفحة إضافة نشرة جديدة
+@app.get("/add-price", response_class=HTMLResponse)
+async def show_add_form(request: Request):
+    return templates.TemplateResponse("add_price.html", {"request": request})
+
+
+# 2. مسار معالجة وحفظ البيانات في PostgreSQL
+@app.post("/add-price")
+async def add_price(
+    crop_name: str = Form(...),
+    price: float = Form(...),
+    state: str = Form(...)
+):
+    if engine:
+        try:
+            with engine.connect() as connection:
+                # استبدل أسماء الأعمدة بما يطابق جدولك في Supabase
+                query = text("""
+                    INSERT INTO prices (crop_name, price, state) 
+                    VALUES (:crop_name, :price, :state)
+                """)
+                connection.execute(query, {
+                    "crop_name": crop_name, 
+                    "price": price, 
+                    "state": state
+                })
+                connection.commit()
+        except Exception as e:
+            print(f"Error inserting data: {e}")
+
+    # إعادة التوجيه للصفحة الرئيسية بعد الإضافة
+    return RedirectResponse(url="/", status_code=303)
