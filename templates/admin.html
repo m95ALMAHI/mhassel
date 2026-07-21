@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم | محاصيل السودان</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-emerald-900">👑 لوحة إدارة المنصة</h1>
+            <a href="/" class="text-sm bg-gray-600 text-white px-3 py-2 rounded">العودة للموقع</a>
+        </div>
+
+        <!-- نموذج إضافة نشرة/عرض جديد -->
+        <div class="bg-white p-6 rounded-lg shadow mb-8">
+            <h2 class="text-lg font-bold mb-4 text-emerald-800">إضافة نشرة أسعار / عرض جديد</h2>
+            <form action="/add-price" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">نوع النشرة:</label>
+                    <select name="order_type" class="w-full border p-2 rounded">
+                        <option value="SELL">نشرة سعر / عرض بيع</option>
+                        <option value="BUY">طلب شراء</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">اسم المحصول:</label>
+                    <input type="text" name="crop_name" placeholder="مثال: سمسم أبيض" class="w-full border p-2 rounded" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">الكمية / الوحدة:</label>
+                    <input type="text" name="quantity" placeholder="مثال: طن أو قنطار" class="w-full border p-2 rounded" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">السعر (SDG):</label>
+                    <input type="number" step="0.01" name="price_per_unit" placeholder="السعر بالجنيه" class="w-full border p-2 rounded" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">الولاية / السوق:</label>
+                    <input type="text" name="state" placeholder="مثال: القضارف" class="w-full border p-2 rounded" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">رقم التواصل:</label>
+                    <input type="text" name="phone" placeholder="249..." class="w-full border p-2 rounded" required>
+                </div>
+                <div class="md:col-span-2 mt-2">
+                    <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2 rounded">
+                        نشر في الأسواق
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
