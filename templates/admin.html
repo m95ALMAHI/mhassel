@@ -6,51 +6,96 @@
     <title>لوحة التحكم | محاصيل السودان</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-6">
-    <div class="max-w-4xl mx-auto">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-emerald-900">👑 لوحة إدارة المنصة</h1>
-            <a href="/" class="text-sm bg-gray-600 text-white px-3 py-2 rounded">العودة للموقع</a>
+<body class="bg-gray-100 text-gray-800 p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto space-y-6">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center bg-emerald-900 text-white p-4 rounded-xl shadow">
+            <div>
+                <h1 class="text-xl font-bold">👑 لوحة إدارة منصة المحاصيل</h1>
+                <p class="text-xs text-emerald-200">التحكم بالنشرات والمعاملات البنكية</p>
+            </div>
+            <a href="/" class="bg-emerald-700 hover:bg-emerald-600 px-3 py-1.5 rounded-lg text-sm transition">
+                🌐 الذهاب للموقع
+            </a>
         </div>
 
-        <!-- نموذج إضافة نشرة/عرض جديد -->
-        <div class="bg-white p-6 rounded-lg shadow mb-8">
-            <h2 class="text-lg font-bold mb-4 text-emerald-800">إضافة نشرة أسعار / عرض جديد</h2>
+        <!-- قسم إضافة نشرة رسمية -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <h2 class="text-lg font-bold text-emerald-900 mb-4 border-b pb-2">➕ إضافة نشرة أسعار جديدة للأسواق</h2>
             <form action="/add-price" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium mb-1">نوع النشرة:</label>
-                    <select name="order_type" class="w-full border p-2 rounded">
-                        <option value="SELL">نشرة سعر / عرض بيع</option>
-                        <option value="BUY">طلب شراء</option>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">نوع النشرة:</label>
+                    <select name="order_type" class="w-full border p-2 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <option value="SELL">عرض بيع رسمي</option>
+                        <option value="BUY">طلب شراء رسمي</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">اسم المحصول:</label>
-                    <input type="text" name="crop_name" placeholder="مثال: سمسم أبيض" class="w-full border p-2 rounded" required>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">اسم المحصول:</label>
+                    <input type="text" name="crop_name" placeholder="مثال: سمسم أبيض ممتاز" class="w-full border p-2 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">الكمية / الوحدة:</label>
-                    <input type="text" name="quantity" placeholder="مثال: طن أو قنطار" class="w-full border p-2 rounded" required>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">الكمية / الوحدة:</label>
+                    <input type="text" name="quantity" placeholder="مثال: طن / جوال" class="w-full border p-2 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">السعر (SDG):</label>
-                    <input type="number" step="0.01" name="price_per_unit" placeholder="السعر بالجنيه" class="w-full border p-2 rounded" required>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">السعر (SDG):</label>
+                    <input type="number" step="0.01" name="price_per_unit" placeholder="السعر بالجنيه" class="w-full border p-2 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">الولاية / السوق:</label>
-                    <input type="text" name="state" placeholder="مثال: القضارف" class="w-full border p-2 rounded" required>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">السوق / الولاية:</label>
+                    <input type="text" name="state" placeholder="مثال: القضارف" class="w-full border p-2 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">رقم التواصل:</label>
-                    <input type="text" name="phone" placeholder="249..." class="w-full border p-2 rounded" required>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">رقم التواصل (الواتساب):</label>
+                    <input type="text" name="phone" placeholder="249..." class="w-full border p-2 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-emerald-500 outline-none" required>
                 </div>
                 <div class="md:col-span-2 mt-2">
-                    <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2 rounded">
-                        نشر في الأسواق
+                    <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2.5 rounded-lg shadow transition">
+                        📢 نشر في الأسواق الآن
                     </button>
                 </div>
             </form>
         </div>
+
+        <!-- سجل إشعارات التحويلات البنكية -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <h2 class="text-lg font-bold text-blue-900 mb-4 border-b pb-2">💳 طلبات وإشعارات التحويل البنكي الواردة</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-right border-collapse">
+                    <thead class="bg-gray-100 text-xs text-gray-600">
+                        <tr>
+                            <th class="p-2 border">رقم العرض</th>
+                            <th class="p-2 border">اسم المحول</th>
+                            <th class="p-2 border">الهاتف</th>
+                            <th class="p-2 border">رقم العملية البنكية</th>
+                            <th class="p-2 border">الصورة</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        {% for tx in transactions %}
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-2 border font-bold">#{{ tx.order_id }}</td>
+                            <td class="p-2 border">{{ tx.buyer_name }}</td>
+                            <td class="p-2 border">{{ tx.buyer_phone }}</td>
+                            <td class="p-2 border font-mono text-blue-700">{{ tx.bank_tx_id }}</td>
+                            <td class="p-2 border">
+                                <a href="{{ tx.receipt_image }}" target="_blank" class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">عرض الإشعار 🖼️</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center p-4 text-gray-500">لا توجد إشعارات تحويل مرفقة بعد.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
+
 </body>
 </html>
