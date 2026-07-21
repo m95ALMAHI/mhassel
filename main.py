@@ -8,27 +8,24 @@ from supabase import create_client, Client
 
 load_dotenv()
 
-# تنظيف القراءات
+# قراءة وتنظيف القيم
 SUPABASE_URL = (os.getenv("SUPABASE_URL") or "").strip()
 SUPABASE_KEY = (os.getenv("SUPABASE_KEY") or "").strip()
 
-print(f"--> [DEBUG] URL: '{SUPABASE_URL}' | Key Length: {len(SUPABASE_KEY)}")
-
+# تهيئة العميل بأسلوب محمي تجنباً لـ Crash السيرفر
 supabase: Client = None
 
-# تهيئة العميل بأمان لتجنب إيقاف السيرفر
 if SUPABASE_URL and SUPABASE_KEY:
     try:
         supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-        print("--> [SUCCESS] Supabase initialized successfully!")
+        print("--> [SUCCESS] Supabase connected successfully!")
     except Exception as e:
-        print(f"--> [ERROR] Supabase init failed: {e}")
+        print(f"--> [ERROR] Supabase initialization failed: {e}")
 else:
-    print("--> [WARNING] SUPABASE_URL or SUPABASE_KEY is missing!")
+    print(f"--> [WARNING] Environment variables missing. URL: '{SUPABASE_URL}', Key Length: {len(SUPABASE_KEY)}")
 
 app = FastAPI(title="Mahaseel Sudan")
 
-# المجلدات الثابتة والقوالب
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
@@ -40,10 +37,16 @@ async def home(request: Request):
             res = supabase.table("prices").select("*").order("created_at", desc=True).execute()
             prices = res.data or []
         except Exception as e:
-            print(f"Error fetching data: {e}")
-            
+            print(f"Database query error: {e}")
+
     return templates.TemplateResponse("index.html", {"request": request, "prices": prices})
 
-@app.get("/health")
-async def health_check():
-    return {"status": "ok", "supabase_connected": supabase is not None}
+# مسار جديد للتحقق من البيئة مباشرة من المتصفح
+@app.get("/debug-env")
+async def debug_env():
+    return {
+        "supabase_url_value": SUPABASE_URL,
+        "supabase_url_is_valid": SUPABASE_URL.startswith("https://"),
+        "supabase_key_length": len(SUPABASE_KEY),
+        "is_connected": supabase is not None
+    }
